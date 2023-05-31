@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "NODE_EVN=development nodemon",
-    "build": "NODE_EVN=development tsc",
+    "build": "NODE_EVN=production tsc",
     "start": "node -r ./ts-path-prod.ts ./dist/index.js"
   },
   "dependencies": {
