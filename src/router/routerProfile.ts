@@ -1,6 +1,7 @@
-import { createProfile, getProfilesByUserId } from "@/controllers/profile";
-import { isAuthentication } from "@/middlewares";
 import express from "express";
+import { isAuthentication } from "@/middlewares";
+import { getProfilesByUserId } from "@/controllers/profile/getProfilesByUserId";
+import { createProfile } from "@/controllers/profile/createProfile";
 
 export default (router: express.Router) => {
   router.get(
