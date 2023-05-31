@@ -1,0 +1,6 @@
+{
+  "watch": ["./src"],
+  "exec": " tsnd -r tsconfig-paths/register --respawn ./src/index.ts",
+  "ext": ".ts, .js",
+  "ignore": ["**/*.test.ts", "**/*.spec.ts", ".git", "node_modules"]
+}

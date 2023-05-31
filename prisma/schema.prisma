@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model wallet_account {
+  acc_id              Int                  @id(map: "account_pkey") @default(autoincrement())
+  profile_id          Int?
+  acc_name            String               @db.VarChar
+  acc_type_id         Int?
+  acc_amount_initial  Decimal?             @db.Decimal(9, 2)
+  acc_icon            String?              @db.VarChar
+  acc_hidden          Boolean?             @default(false)
+  acc_note            String?              @db.VarChar
+  update_at           DateTime?            @default(now()) @db.Timestamp(6)
+  wallet_account_type wallet_account_type? @relation(fields: [acc_type_id], references: [acc_type_id], onDelete: NoAction, onUpdate: NoAction, map: "account_type_id")
+  wallet_profile      wallet_profile?      @relation(fields: [profile_id], references: [profile_id], onDelete: NoAction, onUpdate: NoAction, map: "profile_id")
+  wallet_transaction  wallet_transaction[]
+}
+
+model wallet_account_type {
+  acc_type_id    Int              @id(map: "account_type_pkey") @default(autoincrement())
+  update_at      DateTime?        @default(now()) @db.Time(6)
+  acc_type_name  String?          @db.VarChar
+  acc_type_icon  String?          @db.VarChar
+  wallet_account wallet_account[]
+}
+
+model wallet_profile {
+  profile_id     Int              @id(map: "profile_pkey") @default(autoincrement())
+  profile_name   String?          @db.VarChar
+  update_at      DateTime?        @default(now()) @db.Timestamp(6)
+  user_id        Int?
+  wallet_account wallet_account[]
+  wallet_user    wallet_user?     @relation(fields: [user_id], references: [user_id], onUpdate: SetNull, map: "user_id")
+}
+
+model wallet_transaction {
+  trans_id                Int                      @id @default(autoincrement())
+  acc_id                  Int?
+  trans_note              String?                  @db.VarChar
+  trans_date              DateTime?                @db.Timestamp(6)
+  trans_type_id           Int?
+  trans_amount            Decimal?                 @db.Decimal(9, 2)
+  wallet_account          wallet_account?          @relation(fields: [acc_id], references: [acc_id], onDelete: NoAction, onUpdate: NoAction, map: "acc_id")
+  wallet_transaction_type wallet_transaction_type? @relation(fields: [trans_type_id], references: [trans_type_id], onDelete: NoAction, onUpdate: NoAction, map: "trans_type_id")
+}
+
+model wallet_transaction_type {
+  trans_type_id      Int                  @id @default(autoincrement())
+  trans_type_name    String               @db.VarChar
+  update_at          DateTime?            @default(now()) @db.Timestamp(6)
+  wallet_transaction wallet_transaction[]
+}
+
+model wallet_user {
+  user_id            Int              @id @default(autoincrement())
+  user_name          String?          @db.VarChar(255)
+  user_password      String?          @db.VarChar(255)
+  user_email         String?          @db.VarChar(255)
+  user_session_token String?          @db.VarChar(255)
+  wallet_profile     wallet_profile[]
+}
