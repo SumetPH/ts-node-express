@@ -31,30 +31,33 @@ model wallet_account_type {
 }
 
 model wallet_profile {
-  profile_id     Int              @id(map: "profile_pkey") @default(autoincrement())
-  profile_name   String?          @db.VarChar
-  update_at      DateTime?        @default(now()) @db.Timestamp(6)
-  user_id        Int?
-  wallet_account wallet_account[]
-  wallet_user    wallet_user?     @relation(fields: [user_id], references: [user_id], onUpdate: SetNull, map: "user_id")
+  profile_id         Int                  @id(map: "profile_pkey") @default(autoincrement())
+  profile_name       String?              @db.VarChar
+  update_at          DateTime?            @default(now()) @db.Timestamp(6)
+  user_id            Int?
+  wallet_account     wallet_account[]
+  wallet_user        wallet_user?         @relation(fields: [user_id], references: [user_id], onUpdate: SetNull, map: "user_id")
+  wallet_transaction wallet_transaction[]
 }
 
 model wallet_transaction {
-  trans_id                Int                      @id @default(autoincrement())
-  acc_id                  Int?
-  trans_note              String?                  @db.VarChar
-  trans_date              DateTime?                @db.Timestamp(6)
-  trans_type_id           Int?
-  trans_amount            Decimal?                 @db.Decimal(9, 2)
-  wallet_account          wallet_account?          @relation(fields: [acc_id], references: [acc_id], onDelete: NoAction, onUpdate: NoAction, map: "acc_id")
-  wallet_transaction_type wallet_transaction_type? @relation(fields: [trans_type_id], references: [trans_type_id], onDelete: NoAction, onUpdate: NoAction, map: "trans_type_id")
+  trans_id        Int              @id @default(autoincrement())
+  acc_id          Int?
+  trans_note      String?          @db.VarChar
+  trans_date      DateTime?        @db.Timestamp(6)
+  trans_amount    Decimal?         @db.Decimal(9, 2)
+  profile_id      Int?
+  cate_id         Int?
+  wallet_account  wallet_account?  @relation(fields: [acc_id], references: [acc_id], onUpdate: SetNull, map: "acc_id")
+  wallet_category wallet_category? @relation(fields: [cate_id], references: [cate_id], onUpdate: SetNull, map: "cate_id")
+  wallet_profile  wallet_profile?  @relation(fields: [profile_id], references: [profile_id], onUpdate: SetNull, map: "profile_id")
 }
 
 model wallet_transaction_type {
-  trans_type_id      Int                  @id @default(autoincrement())
-  trans_type_name    String               @db.VarChar
-  update_at          DateTime?            @default(now()) @db.Timestamp(6)
-  wallet_transaction wallet_transaction[]
+  trans_type_id   Int               @id @default(autoincrement())
+  trans_type_name String            @db.VarChar
+  update_at       DateTime?         @default(now()) @db.Timestamp(6)
+  wallet_category wallet_category[]
 }
 
 model wallet_user {
@@ -64,4 +67,13 @@ model wallet_user {
   user_email         String?          @db.VarChar(255)
   user_session_token String?          @db.VarChar(255)
   wallet_profile     wallet_profile[]
+}
+
+model wallet_category {
+  cate_id                 Int                     @id @default(autoincrement())
+  trans_type_id           Int
+  cate_name               String                  @db.VarChar(255)
+  profile_id              Int?
+  wallet_transaction_type wallet_transaction_type @relation(fields: [trans_type_id], references: [trans_type_id], onDelete: SetNull, onUpdate: SetNull, map: "trans_type_id")
+  wallet_transaction      wallet_transaction[]
 }
