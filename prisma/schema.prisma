@@ -6,3 +6,101 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Address {
+  addressID Int       @id @default(autoincrement())
+  userID    Int?
+  address   String?   @db.VarChar(255)
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt DateTime? @default(now()) @db.Timestamp(6)
+  User      User?     @relation(fields: [userID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Category {
+  categoryID      Int               @id @default(autoincrement())
+  name            String?           @db.VarChar(255)
+  description     String?           @db.VarChar(255)
+  createdAt       DateTime?         @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime?         @default(now()) @db.Timestamp(6)
+  ProductCategory ProductCategory[]
+}
+
+model Order {
+  orderID       Int            @id @default(autoincrement())
+  userID        Int?
+  orderDate     DateTime?      @default(now()) @db.Timestamp(6)
+  status        String?        @db.VarChar(255)
+  totalQuantity Decimal?       @db.Decimal(15, 2)
+  totalPrice    Decimal?       @db.Decimal(15, 2)
+  createdAt     DateTime?      @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime?      @default(now()) @db.Timestamp(6)
+  User          User?          @relation(fields: [userID], references: [userID], onDelete: NoAction, onUpdate: NoAction)
+  OrderProduct  OrderProduct[]
+  Payment       Payment[]
+}
+
+model OrderProduct {
+  orderProductID Int          @id @default(autoincrement())
+  orderID        Int?
+  productID      Int?
+  createdAt      DateTime?    @default(now()) @db.Timestamp(6)
+  updatedAt      DateTime?    @default(now()) @db.Timestamp(6)
+  productTypeID  Int?
+  Order          Order?       @relation(fields: [orderID], references: [orderID], onDelete: NoAction, onUpdate: NoAction)
+  Product        Product?     @relation(fields: [productID], references: [productID], onDelete: NoAction, onUpdate: NoAction)
+  ProductType    ProductType? @relation(fields: [productTypeID], references: [productTypeID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Payment {
+  paymentID     Int       @id @default(autoincrement())
+  orderID       Int?
+  paymentDate   DateTime? @db.Timestamp(6)
+  paymentMethod String?   @db.VarChar(255)
+  value         Decimal?  @db.Decimal(10, 2)
+  createdAt     DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime? @default(now()) @db.Timestamp(6)
+  Order         Order?    @relation(fields: [orderID], references: [orderID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Product {
+  productID       Int               @id @default(autoincrement())
+  name            String?           @db.VarChar(255)
+  description     String?           @db.VarChar(255)
+  createdAt       DateTime?         @default(now()) @db.Timestamp(6)
+  updatedAt       DateTime?         @default(now()) @db.Timestamp(6)
+  OrderProduct    OrderProduct[]
+  ProductCategory ProductCategory[]
+  ProductType     ProductType[]
+}
+
+model ProductCategory {
+  productCategoryID Int       @id @default(autoincrement())
+  productID         Int?
+  categoryID        Int?
+  createdAt         DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime? @default(now()) @db.Timestamp(6)
+  Category          Category? @relation(fields: [categoryID], references: [categoryID], onDelete: NoAction, onUpdate: NoAction)
+  Product           Product?  @relation(fields: [productID], references: [productID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ProductType {
+  productTypeID Int            @id @default(autoincrement())
+  productID     Int?
+  name          String?        @db.VarChar(255)
+  createdAt     DateTime?      @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime?      @default(now()) @db.Timestamp(6)
+  quantity      Int?
+  price         Decimal?       @db.Decimal(10, 2)
+  OrderProduct  OrderProduct[]
+  Product       Product?       @relation(fields: [productID], references: [productID], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model User {
+  userID    Int       @id @default(autoincrement())
+  email     String?   @db.VarChar(255)
+  password  String?   @db.VarChar(255)
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt DateTime? @default(now()) @db.Timestamp(6)
+  Address   Address[]
+  Order     Order[]
+}
