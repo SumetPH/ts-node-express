@@ -1,6 +1,6 @@
 import express from "express";
 
-import * as product from "@/controllers/product";
+import * as product from "../controllers/product";
 
 export default (router: express.Router) => {
   router.get("/api/products", product.products);

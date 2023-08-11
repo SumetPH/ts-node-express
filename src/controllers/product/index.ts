@@ -1,4 +1,4 @@
-import { prisma } from "@/db";
+import { prisma } from "../../db";
 import express from "express";
 
 // GET /api/products
